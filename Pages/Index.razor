@@ -1,0 +1,47 @@
+﻿@page "/" 
+@inject NavigationManager _navigationManager
+
+<h1>Home</h1>
+
+<button class="btn btn-primary" @onclick="NavigateToCounterComponent">Go to chat</button>
+
+<p>
+    Enter your name to start chatting:
+</p>
+
+<input type="text" maxlength="32" @bind="@_bufUsername" @onkeydown="enter => SetUsername()"/>
+<button type="button" @onclick="@SetUsername"><span class="oi oi-chat" aria-hidden="true"></span> Enter chat</button>
+
+
+@if (_message != null)
+{
+    <div class="invalid-feedback">@_message</div>
+    <small id="emailHelp" class="form-text text-muted">@_message</small>
+}
+
+@code {
+    private string? _username;
+
+    private string? _bufUsername;
+
+    private string? _message;
+
+    private void NavigateToCounterComponent()
+    {
+        if (!string.IsNullOrWhiteSpace(_username))
+            _navigationManager.NavigateTo($"chat/{_username}");
+    }
+
+    private void SetUsername()
+    {
+        if (string.IsNullOrWhiteSpace(_bufUsername))
+        {
+            _message = "Please enter a correct name";
+            _bufUsername = string.Empty;
+            return;
+        }
+
+        _username = _bufUsername;
+    }
+
+}
