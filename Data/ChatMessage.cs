@@ -1,8 +1,8 @@
 namespace BlazorApp.Data
 {
-    public class Message
+    public class ChatMessage
     {
-        public Message(string username, string body, bool mine)
+        public ChatMessage(string username, string? body, bool mine)
         {
             Username = username;
             Body = body;
@@ -10,7 +10,7 @@ namespace BlazorApp.Data
         }
 
         public string Username { get; set; }
-        public string Body { get; set; }
+        public string? Body { get; set; }
         public bool Mine { get; set; }
 
         public bool IsNotice => Body.StartsWith("[Notice]");

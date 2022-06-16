@@ -1,4 +1,4 @@
-﻿@page "/chat/{Username}"
+﻿@page "/chat/{ChatId}"
 @using BlazorApp.Data
 @inject NavigationManager _navigationManager
 
@@ -37,6 +37,7 @@ else
         <span>You are connected as <b>@Username</b></span>
         <button class="btn btn-sm btn-warning ml-md-auto" @onclick="@DisconnectAsync">Disconnect</button>
     </div>
+    
     // display messages
     <div id="scrollbox">
         @foreach (var item in _messages)
@@ -54,8 +55,8 @@ else
             }
         }
         <hr/>
-        <textarea class="input-lg" placeholder="enter your message" @bind="@_newMessage" @onkeyup="enter => SendAsync(_newMessage)"></textarea>
-        <button class="btn btn-default" @onclick="@(() => SendAsync(_newMessage))">Send</button>
+        <textarea class="input-lg" placeholder="enter your message" @bind="@_newMessage" @onkeydown="@(Enter)"></textarea>
+        <button class="btn btn-default" @onclick="@(SendNewMessageAsync)">Send</button>
     </div>
 }
 
@@ -66,25 +67,29 @@ else
         _navigationManager.NavigateTo("");
     }
 
-    // name of the user who will be chatting
+    // id of the chat
     [Parameter]
-    public string? Username { get; set; }
+    public string ChatId { get; set; }
+    
+    // name of the user who will be chatting
+    public string? Username { get; set; } = "GTEgorss";
 
     // flag to indicate chat status
     private static bool _isChatting = false;
 
     // on-screen message
-    private string _message;
+    private string? _message;
 
     // new message input
-    private string _newMessage;
+    private string? _newMessage;
 
     // list of messages in chat
-    private static List<Message> _messages = new List<Message>();
+    private static List<ChatMessage> _messages = new List<ChatMessage>();
 
+    
     public async Task StartChat()
     {
-    // check username is valid
+        // check username is valid
         if (string.IsNullOrWhiteSpace(Username))
         {
             _message = "Please enter a name";
@@ -93,14 +98,14 @@ else
 
         try
         {
-    // Start chatting and force refresh UI.
+            // Start chatting and force refresh UI.
             _isChatting = true;
             await Task.Delay(1);
 
-    // remove old messages if any
-            _messages.Clear();
+            // remove old messages if any
+            //_messages.Clear();
 
-            await SendAsync($"[Notice] {Username} joined chat room.");
+            await SendMessageAsync($"[Notice] {Username} joined chat room.");
         }
         catch (Exception e)
         {
@@ -109,13 +114,13 @@ else
         }
     }
 
-    private void BroadcastMessage(string name, string message)
+    private void BroadcastMessage(string name, string? message)
     {
         bool isMine = name.Equals(Username, StringComparison.OrdinalIgnoreCase);
 
-        _messages.Add(new Message(name, message, isMine));
+        _messages.Add(new ChatMessage(name, message, isMine));
 
-    // Inform blazor the UI needs updating
+        // Inform blazor the UI needs updating
         StateHasChanged();
     }
 
@@ -123,18 +128,40 @@ else
     {
         if (_isChatting)
         {
-            await SendAsync($"[Notice] {Username} left chat room.");
+            await SendMessageAsync($"[Notice] {Username} left chat room.");
 
             _isChatting = false;
         }
     }
 
-    private async Task SendAsync(string message)
+    private async Task SendNewMessageAsync()
+    {
+        if (_isChatting && !string.IsNullOrWhiteSpace(_newMessage))
+        {
+            if (Username != null)
+            {
+                BroadcastMessage(Username, _newMessage);
+            }
+            this._newMessage = string.Empty;
+        }
+    }
+    
+    private async Task SendMessageAsync(string message)
     {
         if (_isChatting && !string.IsNullOrWhiteSpace(message))
         {
-            BroadcastMessage(Username, message);
-            _newMessage = string.Empty;
+            if (Username != null)
+            {
+                BroadcastMessage(Username, message);
+            }
+        }
+    }
+    
+    private async void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter")
+        {
+            await SendNewMessageAsync();
         }
     }
 }
