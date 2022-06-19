@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Text;
@@ -15,6 +16,10 @@ namespace BlazorApp.Services
         private const string BaseAddress = "/v1/chats";
 
         private string? _chatId;
+
+        private string _userIdFirst;
+        
+        private string _userIdSecond;
 
         public ServerInteraction(string address)
         {
@@ -37,12 +42,14 @@ namespace BlazorApp.Services
             return response;
         }
 
+        //TODO save userIDs
         public async Task<HttpResponseMessage> CreateChatWithNameAnd2Users(string chatName, string userNameFirst,
             string userNameSecond)
         {
             var jsonChatWithUsers =
                 JsonSerializer.Serialize<CreateChatWithTwoUsersDto>(
                     new CreateChatWithTwoUsersDto(chatName, userNameFirst, userNameSecond));
+            
             var data = new StringContent(jsonChatWithUsers, Encoding.UTF8, "application/json");
 
             var response = await new HttpClient().PostAsync(_address + "/default", data);
@@ -61,7 +68,7 @@ namespace BlazorApp.Services
         }
 
         //TODO question about user and message ID
-        //TODO ??? why would I send them front the frontend side
+        //TODO ??? why would I send them from the frontend side
 
         public async Task<HttpResponseMessage> SendMessage(string chatId, string userId, string text)
         {
@@ -77,10 +84,22 @@ namespace BlazorApp.Services
             return response;
         }
 
-        public async Task<string> GetMessagesByChatId(string chatId, int limit, string from = null!)
+        public async Task<string> GetMessagesByChatId(string chatId, int limit = 1000, string from = null!)
         {
             return await new HttpClient().GetStringAsync(_address + $"/{chatId}" + "/messages" +
                                                          $"?limit={limit} + $&?from={from}");
+        }
+
+        public List<ChatMessage> GetMessagesList(string chatId, string userId)
+        {
+            string? ans = GetMessagesByChatId(chatId).ToString();
+
+            if (ans == null)
+            {
+                return new List<ChatMessage>();
+            }
+
+            return new List<ChatMessage>();
         }
     }
 }
