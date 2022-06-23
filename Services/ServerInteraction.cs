@@ -69,7 +69,7 @@ namespace BlazorApp.Services
 
         public async Task<HttpResponseMessage> SendMessage(string chatId, string userId, string text)
         {
-            var response = await new HttpClient().GetAsync(_address + $"/{chatId}" + "/messages" + $"?user_id={userId}" + $"?text={text}");
+            var response = await new HttpClient().GetAsync(_address + $"/{chatId}" + "/messages" + $"?user_id={userId}" + $"&?text={text}");
             
             return response;
         }
@@ -77,7 +77,7 @@ namespace BlazorApp.Services
         public async Task<string> GetMessagesByChatId(string chatId, int limit = 1000, string from = null!)
         {
             return await new HttpClient().GetStringAsync(_address + $"/{chatId}" + "/messages" +
-                                                         $"?limit={limit} + $&?from={from}");
+                                                         $"?limit={limit}"+ $"&?from={from}");
         }
 
         public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userName)
@@ -91,8 +91,8 @@ namespace BlazorApp.Services
                 return new List<ChatMessage>();
             }
             
-            var messagesJson = await new HttpClient().GetStringAsync(_address + BaseAddress + 
-                $"?chat_id={_chatId}" + $"limit=1000");
+            /*
+            var messagesJson = await new HttpClient().GetStringAsync(_address + BaseAddress + $"?chat_id={_chatId}" + $"limit=1000");
 
             ChatGetMessagesResponse? messages = JsonSerializer.Deserialize<ChatGetMessagesResponse>(messagesJson);
 
@@ -107,6 +107,9 @@ namespace BlazorApp.Services
             }
 
             return chatMessages;
+            */
+
+            return new List<ChatMessage>();
         }
     }
 }
