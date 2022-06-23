@@ -7,7 +7,7 @@
 
 <h1>Chat</h1>
 
-<button class="btn btn-primary" @onclick="NavigateToHome">Back to home</button>
+<button class="btn btn-primary" @onclick="NavigateToLogin">Back to home</button>
 
 <hr/>
 
@@ -15,7 +15,7 @@
 {
     @if (CheckUserToken())
     {
-        NavigateToHome();
+        NavigateToLogin();
     }
 
     <button type="button" @onclick="@StartChat"><span class="oi oi-chat" aria-hidden="true"></span> Enter chat</button>
@@ -31,7 +31,7 @@ else
 {
     @if (CheckUserToken())
     {
-        NavigateToHome();
+        NavigateToLogin();
     }
 
     // banner to show current user
@@ -65,9 +65,10 @@ else
 
 @code {
 
-    private void NavigateToHome()
+    private void NavigateToLogin()
     {
-        _navigationManager.NavigateTo("login");
+        _navigationManager.NavigateTo("localhost:5000/login");
+        //_navigationManager.NavigateTo("/login");
     }
 
     // id of the chat
