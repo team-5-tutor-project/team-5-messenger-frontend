@@ -67,20 +67,10 @@ namespace BlazorApp.Services
             return response;
         }
 
-        //TODO question about user and message ID
-        //TODO ??? why would I send them from the frontend side
-
         public async Task<HttpResponseMessage> SendMessage(string chatId, string userId, string text)
         {
-            var jsonMessage = JsonSerializer.Serialize<MessageDto>(
-                new MessageDto(Guid.NewGuid().ToString(), text,
-                    DateTime.Now.ToString(CultureInfo.InvariantCulture)));
-
-            var data = new StringContent(jsonMessage, Encoding.UTF8, "application/json");
-
-            var response =
-                await new HttpClient().PostAsync(_address + $"/{chatId}" + "/messages" + $"?user_id={userId}", data);
-
+            var response = await new HttpClient().GetAsync(_address + $"/{chatId}" + "/messages" + $"?user_id={userId}" + $"?text={text}");
+            
             return response;
         }
 
@@ -90,16 +80,33 @@ namespace BlazorApp.Services
                                                          $"?limit={limit} + $&?from={from}");
         }
 
-        public List<ChatMessage> GetMessagesList(string chatId, string userId)
+        public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userName)
         {
             string? ans = GetMessagesByChatId(chatId).ToString();
+
+            Console.WriteLine(ans);
 
             if (ans == null)
             {
                 return new List<ChatMessage>();
             }
+            
+            var messagesJson = await new HttpClient().GetStringAsync(_address + BaseAddress + 
+                $"?chat_id={_chatId}" + $"limit=1000");
 
-            return new List<ChatMessage>();
+            ChatGetMessagesResponse? messages = JsonSerializer.Deserialize<ChatGetMessagesResponse>(messagesJson);
+
+            List<ChatMessage> chatMessages = new List<ChatMessage>();
+
+            if (messages != null)
+            {
+                foreach (Message message in messages.messages)
+                {
+                    chatMessages.Add(new ChatMessage(message.messageId, message.text, userName == message.messageId));
+                }
+            }
+
+            return chatMessages;
         }
     }
 }

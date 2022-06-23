@@ -11,16 +11,10 @@
 
 <hr/>
 
+@CheckUserToken
+
 @if (!_isChatting)
 {
-    <!--
-    <p>
-        Enter your name to start chatting:
-    </p>
-
-    <input type="text" maxlength="32" @bind="@UserId" @onkeyup="enter => StartChat()"/>
-    -->
-
     <button type="button" @onclick="@StartChat"><span class="oi oi-chat" aria-hidden="true"></span> Enter chat</button>
 
     // Error messages
@@ -96,8 +90,9 @@ else
     private static List<ChatMessage> _messages = new List<ChatMessage>();
     
     // entity for server intercations
-    private ServerInteraction _serverInteraction = new ServerInteraction("http://localhost:8080");
+    private ServerInteraction _serverInteraction = new ServerInteraction("http://localhost:8000");
 
+    private ClientInteraction _clientInteraction = new ClientInteraction("http://localhost:4000");
 
     public async Task StartChat()
     {
@@ -117,8 +112,12 @@ else
             // remove old messages if any
             //_messages.Clear();
 
-            _messages = _serverInteraction.GetMessagesList(ChatId, UserId);
-            await SendMessageAsync($"[Notice] {UserId} joined chat room.");
+            if (ChatId != null)
+            {
+                _messages = _serverInteraction.GetMessagesList(ChatId, UserId).Result;
+            }
+            
+            await SendMessageAsync($"(Notice) {UserId} joined chat room.");
         }
         catch (Exception e)
         {
@@ -176,6 +175,22 @@ else
         if (e.Code is "Enter" or "NumpadEnter")
         {
             await SendNewMessageAsync();
+        }
+    }
+
+    private void CheckUserToken()
+    {
+        try
+        {
+            var userByToken = _clientInteraction.GetUserByToken(Token);
+            if (userByToken.Result?.userId == null)
+            {
+                //TODO REDIRECT TO /login
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 }
