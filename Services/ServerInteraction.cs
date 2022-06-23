@@ -109,6 +109,8 @@ namespace BlazorApp.Services
             return chatMessages;
             */
 
+            //TODO remove comment braces when testing with existing chat on the messenger backend
+            
             return new List<ChatMessage>();
         }
     }
