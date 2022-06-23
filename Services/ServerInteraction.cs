@@ -69,9 +69,17 @@ namespace BlazorApp.Services
 
         public async Task<HttpResponseMessage> SendMessage(string chatId, string userId, string text)
         {
-            var response = await new HttpClient().GetAsync(_address + $"/{chatId}" + "/messages" + $"?user_id={userId}" + $"&?text={text}");
-            
-            return response;
+            var parameters = new Dictionary<string, string>
+            {
+                { "userId", userId },
+                { "text",  text}
+            };
+
+            var content = new FormUrlEncodedContent(parameters);
+
+            var message = await new HttpClient().PostAsync(_address + BaseAddress + $"/{chatId}" + "/messages", content);
+
+            return message;
         }
 
         public async Task<string> GetMessagesByChatId(string chatId, int limit = 1000, string from = null!)

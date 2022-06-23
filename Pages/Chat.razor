@@ -1,4 +1,4 @@
-﻿@page "/chat/{ChatId}/{UserId}/{Token}"
+﻿@page "/chat/{ChatId}/{Token}"
 @using BlazorApp.Data
 @using BlazorApp.Services
 @inject NavigationManager _navigationManager
@@ -196,11 +196,10 @@ else
             var userByToken = _clientInteraction.GetUserByToken(Token);
             if (false && userByToken.Result?.userId == null) //TODO remove false when testing token with client backend
             {
-                Console.WriteLine("Redirected");
                 return true;
             }
 
-    //UserId = userByToken.Result.userId;
+            UserId = userByToken.Result.userId;
 
             if (userByToken.Result.userType == "client")
             {
@@ -215,7 +214,6 @@ else
                 else Username = "null";
             }
 
-            Console.WriteLine("Not redirected");
             return false;
         }
         catch (Exception e)
