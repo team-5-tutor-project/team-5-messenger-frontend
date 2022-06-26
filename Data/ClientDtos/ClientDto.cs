@@ -4,12 +4,12 @@ namespace BlazorApp.Data.ClientDtos
     {
         public ClientDto(string login, string name)
         {
-            Login = login;
-            Name = name;
+            this.login = login;
+            this.name = name;
         }
         
-        public string Login { get; set; }
+        public string login { get; set; }
         
-        public string Name { get; set; }
+        public string name { get; set; }
     }
 }
