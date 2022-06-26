@@ -16,10 +16,8 @@
 
 @if (!_isChatting)
 {
-    @if (CheckUserToken())
-    {
-        NavigateToLogin();
-    }
+    @CheckUserToken()
+    ;
 
     <button type="button" @onclick="@StartChat"><span class="oi oi-chat" aria-hidden="true"></span> Enter chat</button>
 
@@ -32,10 +30,8 @@
 }
 else
 {
-    @if (CheckUserToken())
-    {
-        NavigateToLogin();
-    }
+    @CheckUserToken()
+    ;
 
     // banner to show current user
     <div class="alert alert-secondary mt-4" role="alert">
@@ -71,7 +67,7 @@ else
     private void NavigateToLogin()
     {
         _navigationManager.NavigateTo("localhost:5000/login");
-        //_navigationManager.NavigateTo("/login");
+    //_navigationManager.NavigateTo("/login");
     }
 
     // id of the chat
@@ -107,8 +103,8 @@ else
 
     public async Task StartChat()
     {
-        CheckUserToken();
-        
+        await CheckUserToken();
+
     // check username is valid
         if (string.IsNullOrWhiteSpace(UserId))
         {
@@ -127,7 +123,7 @@ else
 
             if (ChatId != null && Username != null)
             {
-                _messages = _serverInteraction.GetMessagesList(ChatId, Username).Result;
+                _messages = _serverInteraction.GetMessagesList(ChatId, Username);
             }
 
             await SendMessageAsync($"(Notice) {UserId} joined chat room.");
@@ -144,7 +140,7 @@ else
         bool isMine = name.Equals(UserId, StringComparison.OrdinalIgnoreCase);
 
         _messages.Add(new ChatMessage(name, message, isMine));
-        await _serverInteraction.SendMessage(ChatId, UserId, message);
+    //await _serverInteraction.SendMessage(ChatId, UserId, message); //TODO remove when using with a real user
 
     // Inform blazor the UI needs updating
         StateHasChanged();
@@ -191,84 +187,57 @@ else
         }
     }
 
-    private bool CheckUserToken()
+    private async Task CheckUserToken()
     {
         try
         {
-            // //Task<UserByTokenDto?> userByToken = _clientInteraction.GetUserByToken(Token);
-            // var response = new HttpClient().GetStringAsync("http://localhost:4000/api/authorization?token=99996086-1c88-4638-b918-d60833a40fe8");
-            // File.WriteAllLines("/Users/egorsergeev/test.txt", response.Result.Split());
-            // var userByToken = JsonSerializer.Deserialize<UserByTokenDto>(response.Result); 
-            //
-            // if (userByToken.userId == null)
-            // {
-            //     return true;
-            // }
-            //
-            // UserId = userByToken.userId;
-            //
-            // if (userByToken.userType == "Client")
-            // {
-            //     var clientDto = _clientInteraction.GetClientByToken(Token).Result;
-            //     if (clientDto != null) Username = clientDto.Name;
-            //     else Username = "null";
-            // }
-            // else if (userByToken.userType == "Tutor")
-            // {
-            //     var tutorDto = _clientInteraction.GetTutorByToken(Token).Result;
-            //     if (tutorDto != null) Username = tutorDto.Name;
-            //     else Username = "null";
-            // }
-            
-            // if (userByToken.Result?.userId == null)
-            // {
-            //     return true;
-            // }
-            //
-            // UserId = userByToken.Result.userId;
-            //
-            // if (userByToken.Result.userType == "Client")
-            // {
-            //     var clientDto = _clientInteraction.GetClientByToken(Token).Result;
-            //     if (clientDto != null) Username = clientDto.Name;
-            //     else Username = "null";
-            // }
-            // else if (userByToken.Result.userType == "Tutor")
-            // {
-            //     var tutorDto = _clientInteraction.GetTutorByToken(Token).Result;
-            //     if (tutorDto != null) Username = tutorDto.Name;
-            //     else Username = "null";
-            // }
+            var userByTokenJson = await _clientInteraction.GetUserByToken(Token);
 
-            UserByTokenDto userByToken = new UserByTokenDto("id", "client");
-            if (userByToken.userId == null)
+            if (userByTokenJson != null)
             {
-                return true;
-            }
-            
-            UserId = userByToken.userId;
-            
-            if (userByToken.userType == "client")
-            {
-                var clientDto = new ClientDto("GTEgorss", "Egor");
-                if (clientDto != null) Username = clientDto.Name;
-                else Username = "null";
-            }
-            else if (userByToken.userType == "tutor")
-            {
-                var tutorDto = new TutorDto("GTEgorss", "Egor");
-                if (tutorDto != null) Username = tutorDto.Name;
-                else Username = "null";
-            }
+                var userByToken = JsonSerializer.Deserialize<UserByTokenDto>(userByTokenJson);
 
-            return false;
+                if (userByToken != null)
+                {
+                    if (userByToken.userId == null)
+                    {
+                        NavigateToLogin();
+                    }
+
+                    UserId = userByToken.userId;
+
+                    if (userByToken.userType == "Client")
+                    {
+                        var clientJson = await _clientInteraction.GetClientByToken(Token);
+                        var client = JsonSerializer.Deserialize<ClientDto>(clientJson);
+                        
+                        if (client != null) Username = client.name;
+                        else Username = "null";
+                    }
+                    else if (userByToken.userType == "Tutor")
+                    {
+                        var tutorJson = await _clientInteraction.GetTutorByToken(Token);
+                        var tutor = JsonSerializer.Deserialize<TutorDto>(tutorJson);
+                        
+                        if (tutor != null) Username = tutor.name;
+                        else Username = "null";
+                    }
+                }
+                else
+                {
+                    NavigateToLogin();
+                }
+            }
+            else
+            {
+                NavigateToLogin();
+            }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            Console.WriteLine(e);
+            throw;
         }
-
-        return false;
     }
 
 }

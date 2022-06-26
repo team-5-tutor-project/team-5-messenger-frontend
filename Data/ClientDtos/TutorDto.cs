@@ -4,22 +4,22 @@ namespace BlazorApp.Data.ClientDtos
     {
         public TutorDto(string login, string name)
         {
-            Login = login;
-            Name = name;
+            this.login = login;
+            this.name = name;
         }
         
-        public string Name { get; set; }
+        public string name { get; set; }
         
-        public string Login { get; set; }
+        public string login { get; set; }
         
-        public WorkFormat WorkFormat { get; set; }
+        public WorkFormat norkFormat { get; set; }
         
-        public string Description { get; set; }
+        public string description { get; set; }
         
-        public int PricePerHour { get; set; }
+        public int pricePerHour { get; set; }
         
-        public int PupilMinClass { get; set; }
+        public int pupilMinClass { get; set; }
         
-        public int PupilMaxClass { get; set; }
+        public int pupilMaxClass { get; set; }
     }
 }

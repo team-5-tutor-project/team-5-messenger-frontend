@@ -18,12 +18,12 @@ namespace BlazorApp.Services
         private string? _chatId;
 
         private string _userIdFirst;
-        
+
         private string _userIdSecond;
 
         public ServerInteraction(string address)
         {
-            _address = address + BaseAddress;
+            _address = address;
         }
 
         public ServerInteraction(string address, string chadId)
@@ -49,7 +49,7 @@ namespace BlazorApp.Services
             var jsonChatWithUsers =
                 JsonSerializer.Serialize<CreateChatWithTwoUsersDto>(
                     new CreateChatWithTwoUsersDto(chatName, userNameFirst, userNameSecond));
-            
+
             var data = new StringContent(jsonChatWithUsers, Encoding.UTF8, "application/json");
 
             var response = await new HttpClient().PostAsync(_address + "/default", data);
@@ -71,8 +71,8 @@ namespace BlazorApp.Services
         {
             var parameters = new Dictionary<string, string>
             {
-                { "userId", userId },
-                { "text",  text}
+                {"user_id", userId},
+                {"text", text}
             };
 
             var content = new FormUrlEncodedContent(parameters);
@@ -82,27 +82,34 @@ namespace BlazorApp.Services
             return message;
         }
 
-        public async Task<string> GetMessagesByChatId(string chatId, int limit = 1000, string from = null!)
+        public async Task<string> GetMessagesByChatId(string chatId, int limit = 1000, string? from = null)
         {
-            return await new HttpClient().GetStringAsync(_address + $"/{chatId}" + "/messages" +
-                                                         $"?limit={limit}"+ $"&?from={from}");
+            try
+            {
+                if (from == null) from = "";
+
+                return await new HttpClient().GetStringAsync(_address + BaseAddress + $"/{chatId}" + "/messages" +
+                                                             $"?limit={limit}" + $"&?from={from}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
-        public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userName)
+        public List<ChatMessage> GetMessagesList(string chatId, string userName)
         {
-            string? ans = GetMessagesByChatId(chatId).ToString();
+            //string? ans = GetMessagesByChatId(chatId).ToString(); //TODO remove comment braces when testing with existing chat on the messenger backend
 
-            Console.WriteLine(ans);
+            string? ans = null;
 
             if (ans == null)
             {
                 return new List<ChatMessage>();
             }
-            
-            /*
-            var messagesJson = await new HttpClient().GetStringAsync(_address + BaseAddress + $"?chat_id={_chatId}" + $"limit=1000");
 
-            ChatGetMessagesResponse? messages = JsonSerializer.Deserialize<ChatGetMessagesResponse>(messagesJson);
+            ChatGetMessagesResponse? messages = JsonSerializer.Deserialize<ChatGetMessagesResponse>(ans);
 
             List<ChatMessage> chatMessages = new List<ChatMessage>();
 
@@ -115,11 +122,6 @@ namespace BlazorApp.Services
             }
 
             return chatMessages;
-            */
-
-            //TODO remove comment braces when testing with existing chat on the messenger backend
-            
-            return new List<ChatMessage>();
         }
     }
 }

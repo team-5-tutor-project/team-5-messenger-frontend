@@ -8,8 +8,8 @@ namespace BlazorApp.Data.ClientDtos
             this.userType = userType;
         }
         
-        public string userId { get; set; }
+        public string? userId { get; set; }
         
-        public string userType { get; set; }
+        public string? userType { get; set; }
     }
 }
