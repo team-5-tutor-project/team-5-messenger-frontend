@@ -1,4 +1,4 @@
-﻿@page "/" 
+﻿@page "/login" 
 @inject NavigationManager _navigationManager
 
 <h1>Home</h1>
@@ -9,7 +9,7 @@
     Enter your name to start chatting:
 </p>
 
-<input type="text" maxlength="32" @bind="@_bufUsername" @onkeydown="enter => SetUsername()"/>
+<input type="text" maxlength="32" @bind="@_bufUsername" @onkeydown="Enter"/>
 <button type="button" @onclick="@SetUsername"><span class="oi oi-chat" aria-hidden="true"></span> Enter chat</button>
 
 
@@ -20,6 +20,8 @@
 }
 
 @code {
+    private string _chatId = "239";
+    
     private string? _username;
 
     private string? _bufUsername;
@@ -29,7 +31,7 @@
     private void NavigateToCounterComponent()
     {
         if (!string.IsNullOrWhiteSpace(_username))
-            _navigationManager.NavigateTo($"chat/{_username}");
+            _navigationManager.NavigateTo($"chat/{_chatId}/token");
     }
 
     private void SetUsername()
@@ -44,4 +46,11 @@
         _username = _bufUsername;
     }
 
+    private async void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code is "Enter" or "NumpadEnter")
+        {
+            SetUsername();
+        }
+    }
 }
