@@ -137,7 +137,7 @@ else
 
     private async void BroadcastMessage(string name, string? message)
     {
-        bool isMine = name.Equals(UserId, StringComparison.OrdinalIgnoreCase);
+        bool isMine = name.Equals(Username, StringComparison.OrdinalIgnoreCase);
 
         _messages.Add(new ChatMessage(name, message, isMine));
     //await _serverInteraction.SendMessage(ChatId, UserId, message); //TODO remove when using with a real user
@@ -162,7 +162,7 @@ else
         {
             if (UserId != null)
             {
-                BroadcastMessage(UserId, _newMessage);
+                BroadcastMessage(Username, _newMessage);
             }
             this._newMessage = string.Empty;
         }
