@@ -41,8 +41,7 @@ namespace BlazorApp.Services
 
             return response;
         }
-
-        //TODO save userIDs
+        
         public async Task<HttpResponseMessage> CreateChatWithNameAnd2Users(string chatName, string userNameFirst,
             string userNameSecond)
         {
@@ -98,11 +97,11 @@ namespace BlazorApp.Services
             }
         }
 
-        public List<ChatMessage> GetMessagesList(string chatId, string userName)
+        public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userId, string userName)
         {
-            //string? ans = await GetMessagesByChatId(chatId); //TODO remove comment braces when testing with existing chat on the messenger backend
+            string? ans = await GetMessagesByChatId(chatId); //TODO remove comment braces when testing with existing chat on the messenger backend
 
-            string? ans = null;
+            //string? ans = null;
 
             if (ans == null)
             {
@@ -117,7 +116,7 @@ namespace BlazorApp.Services
             {
                 foreach (Message message in messages.messages)
                 {
-                    chatMessages.Add(new ChatMessage(message.messageId, message.text, userName == message.messageId));
+                    chatMessages.Add(new ChatMessage(message.id == userId ? userName : message.id, message.text, userId == message.id));
                 }
             }
 
