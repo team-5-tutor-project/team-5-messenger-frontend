@@ -19,8 +19,8 @@ namespace BlazorApp.Services
 
         public async Task<UserByTokenDto?> GetUserByToken(string? token)
         {
-            //var response = await new HttpClient().GetStringAsync(_address + BaseAddress + "/authorization" + $"?token={token}");
-            var response = await new HttpClient().GetStringAsync("http://localhost:4000/api/authorization?token=99996086-1c88-4638-b918-d60833a40fe8");
+            var response = await new HttpClient().GetStringAsync(_address + BaseAddress + "/authorization" + $"?token={token}");
+            //var response = await new HttpClient().GetStringAsync("http://localhost:4000/api/authorization?token=99996086-1c88-4638-b918-d60833a40fe8");
             
             UserByTokenDto? user = JsonSerializer.Deserialize<UserByTokenDto>(response ?? throw new InvalidOperationException());
 
