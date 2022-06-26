@@ -2,6 +2,12 @@ namespace BlazorApp.Data.ClientDtos
 {
     public class TutorDto
     {
+        public TutorDto(string login, string name)
+        {
+            Login = login;
+            Name = name;
+        }
+        
         public string Name { get; set; }
         
         public string Login { get; set; }

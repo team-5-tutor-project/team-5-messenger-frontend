@@ -1,6 +1,9 @@
 ﻿@page "/chat/{ChatId}/{Token}"
 @using BlazorApp.Data
+@using BlazorApp.Data.ClientDtos
 @using BlazorApp.Services
+@using System.IO
+@using System.Text.Json
 @inject NavigationManager _navigationManager
 
 <PageTitle>Chat</PageTitle>
@@ -76,7 +79,6 @@ else
     public string? ChatId { get; set; }
 
     // ID of the user who will be chatting
-    [Parameter]
     public string? UserId { get; set; }
 
     // token
@@ -193,23 +195,68 @@ else
     {
         try
         {
-            var userByToken = _clientInteraction.GetUserByToken(Token);
-            if (false && userByToken.Result?.userId == null) //TODO remove false when testing token with client backend
+            // //Task<UserByTokenDto?> userByToken = _clientInteraction.GetUserByToken(Token);
+            // var response = new HttpClient().GetStringAsync("http://localhost:4000/api/authorization?token=99996086-1c88-4638-b918-d60833a40fe8");
+            // File.WriteAllLines("/Users/egorsergeev/test.txt", response.Result.Split());
+            // var userByToken = JsonSerializer.Deserialize<UserByTokenDto>(response.Result); 
+            //
+            // if (userByToken.userId == null)
+            // {
+            //     return true;
+            // }
+            //
+            // UserId = userByToken.userId;
+            //
+            // if (userByToken.userType == "Client")
+            // {
+            //     var clientDto = _clientInteraction.GetClientByToken(Token).Result;
+            //     if (clientDto != null) Username = clientDto.Name;
+            //     else Username = "null";
+            // }
+            // else if (userByToken.userType == "Tutor")
+            // {
+            //     var tutorDto = _clientInteraction.GetTutorByToken(Token).Result;
+            //     if (tutorDto != null) Username = tutorDto.Name;
+            //     else Username = "null";
+            // }
+            
+            // if (userByToken.Result?.userId == null)
+            // {
+            //     return true;
+            // }
+            //
+            // UserId = userByToken.Result.userId;
+            //
+            // if (userByToken.Result.userType == "Client")
+            // {
+            //     var clientDto = _clientInteraction.GetClientByToken(Token).Result;
+            //     if (clientDto != null) Username = clientDto.Name;
+            //     else Username = "null";
+            // }
+            // else if (userByToken.Result.userType == "Tutor")
+            // {
+            //     var tutorDto = _clientInteraction.GetTutorByToken(Token).Result;
+            //     if (tutorDto != null) Username = tutorDto.Name;
+            //     else Username = "null";
+            // }
+
+            UserByTokenDto userByToken = new UserByTokenDto("id", "client");
+            if (userByToken.userId == null)
             {
                 return true;
             }
-
-            UserId = userByToken.Result.userId;
-
-            if (userByToken.Result.userType == "client")
+            
+            UserId = userByToken.userId;
+            
+            if (userByToken.userType == "client")
             {
-                var clientDto = _clientInteraction.GetClientByToken(Token).Result;
+                var clientDto = new ClientDto("GTEgorss", "Egor");
                 if (clientDto != null) Username = clientDto.Name;
                 else Username = "null";
             }
-            else if (userByToken.Result.userType == "tutor")
+            else if (userByToken.userType == "tutor")
             {
-                var tutorDto = _clientInteraction.GetTutorByToken(Token).Result;
+                var tutorDto = new TutorDto("GTEgorss", "Egor");
                 if (tutorDto != null) Username = tutorDto.Name;
                 else Username = "null";
             }
