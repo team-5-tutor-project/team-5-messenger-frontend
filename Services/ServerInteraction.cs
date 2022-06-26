@@ -100,7 +100,7 @@ namespace BlazorApp.Services
 
         public List<ChatMessage> GetMessagesList(string chatId, string userName)
         {
-            //string? ans = GetMessagesByChatId(chatId).ToString(); //TODO remove comment braces when testing with existing chat on the messenger backend
+            //string? ans = await GetMessagesByChatId(chatId); //TODO remove comment braces when testing with existing chat on the messenger backend
 
             string? ans = null;
 
