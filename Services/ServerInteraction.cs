@@ -100,9 +100,7 @@ namespace BlazorApp.Services
 
         public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userId, string userName)
         {
-            string? ans = await GetMessagesByChatId(chatId); //TODO remove comment braces when testing with existing chat on the messenger backend
-
-            //string? ans = null;
+            string? ans = await GetMessagesByChatId(chatId);
 
             if (ans == null)
             {
