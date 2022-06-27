@@ -138,7 +138,7 @@ else
         bool isMine = name == Username;
 
         _messages.Add(new ChatMessage(name, message, isMine));
-        await _serverInteraction.SendMessage(ChatId, UserId, message); //TODO remove when using with a real user
+        await _serverInteraction.SendMessage(ChatId, UserId, message);
 
     // Inform blazor the UI needs updating
         StateHasChanged();
@@ -234,7 +234,7 @@ else
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            NavigateToLogin();
         }
     }
 
