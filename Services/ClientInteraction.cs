@@ -37,5 +37,19 @@ namespace BlazorApp.Services
             
             return response;
         }
+        
+        public async Task<string> GetClientUsernameByUserId(string userId)
+        {
+            var response = await new HttpClient().GetStringAsync(_address + BaseAddress + "/clients" + $"/{userId}" + "/name");
+
+            return response;
+        }
+        
+        public async Task<string> GetTutorUsernameByUserId(string userId)
+        {
+            var response = await new HttpClient().GetStringAsync(_address + BaseAddress + "/tutors" + $"/{userId}" + "/name");
+
+            return response;
+        }
     }
 }

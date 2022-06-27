@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BlazorApp.Data;
+using BlazorApp.Data.ClientDtos;
 
 namespace BlazorApp.Services
 {
@@ -99,9 +100,7 @@ namespace BlazorApp.Services
 
         public async Task<List<ChatMessage>> GetMessagesList(string chatId, string userId, string userName)
         {
-            string? ans = await GetMessagesByChatId(chatId); //TODO remove comment braces when testing with existing chat on the messenger backend
-
-            //string? ans = null;
+            string? ans = await GetMessagesByChatId(chatId);
 
             if (ans == null)
             {
@@ -112,11 +111,50 @@ namespace BlazorApp.Services
 
             List<ChatMessage> chatMessages = new List<ChatMessage>();
 
+            string? secondUserName = null;
+
             if (messages != null)
             {
                 foreach (Message message in messages.messages)
                 {
-                    chatMessages.Add(new ChatMessage(message.id == userId ? userName : message.id, message.text, userId == message.id));
+                    if (message.id != userId)
+                    {
+                        if (secondUserName == null)
+                        {
+                            try
+                            {
+                                var clientInter = new ClientInteraction("http://localhost:4000");
+                                string? nameResponse = await clientInter.GetClientUsernameByUserId(message.id);
+
+                                secondUserName = JsonSerializer.Deserialize<NameDto>(nameResponse)?.name;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
+                        }
+                        
+                        if (secondUserName == null)
+                        {
+                            try
+                            {
+                                var clientInter = new ClientInteraction("http://localhost:4000");
+                                string? nameResponse = await clientInter.GetTutorUsernameByUserId(message.id);
+
+                                secondUserName = JsonSerializer.Deserialize<NameDto>(nameResponse)?.name;
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.Message);
+                            }
+                        }
+            
+                        chatMessages.Add(new ChatMessage(secondUserName, message.text, userId == message.id));
+                    }
+                    else
+                    {
+                        chatMessages.Add(new ChatMessage(userName, message.text, userId == message.id));
+                    }
                 }
             }
 
