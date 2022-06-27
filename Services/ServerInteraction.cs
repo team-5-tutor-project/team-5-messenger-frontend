@@ -123,7 +123,7 @@ namespace BlazorApp.Services
                         {
                             try
                             {
-                                var clientInter = new ClientInteraction("http://localhost:4000");
+                                var clientInter = new ClientInteraction("https://tutor-project-test.herokuapp.com");
                                 string? nameResponse = await clientInter.GetClientUsernameByUserId(message.id);
 
                                 secondUserName = JsonSerializer.Deserialize<NameDto>(nameResponse)?.name;
@@ -138,7 +138,7 @@ namespace BlazorApp.Services
                         {
                             try
                             {
-                                var clientInter = new ClientInteraction("http://localhost:4000");
+                                var clientInter = new ClientInteraction("https://tutor-project-test.herokuapp.com");
                                 string? nameResponse = await clientInter.GetTutorUsernameByUserId(message.id);
 
                                 secondUserName = JsonSerializer.Deserialize<NameDto>(nameResponse)?.name;

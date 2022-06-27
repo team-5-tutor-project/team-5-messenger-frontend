@@ -61,7 +61,7 @@ else
 }
 
 @code {
-
+    
     private void NavigateToLogin()
     {
         _navigationManager.NavigateTo("localhost:5000/login");
@@ -82,6 +82,8 @@ else
     // name of the user who will be chatting
     public string? Username { get; set; }
 
+    public string? SecondUsername { get; set; }
+
     // flag to indicate chat status
     private static bool _isChatting = false;
 
@@ -92,13 +94,13 @@ else
     private string? _newMessage;
 
     // list of messages in chat
-    private static List<ChatMessage> _messages = new List<ChatMessage>();
+    private List<ChatMessage> _messages = new List<ChatMessage>();
 
     // entity for server intercations
     private ServerInteraction _serverInteraction = new ServerInteraction("http://localhost:8000");
 
-    private ClientInteraction _clientInteraction = new ClientInteraction("http://localhost:4000");
-
+    private ClientInteraction _clientInteraction = new ClientInteraction("https://tutor-project-test.herokuapp.com");
+    
     public async Task StartChat()
     {
         CheckUserToken();
@@ -208,7 +210,7 @@ else
                     {
                         var clientJson = await _clientInteraction.GetClientByToken(Token);
                         var client = JsonSerializer.Deserialize<ClientDto>(clientJson);
-                        
+
                         if (client != null) Username = client.name;
                         else Username = "null";
                     }
@@ -216,7 +218,7 @@ else
                     {
                         var tutorJson = await _clientInteraction.GetTutorByToken(Token);
                         var tutor = JsonSerializer.Deserialize<TutorDto>(tutorJson);
-                        
+
                         if (tutor != null) Username = tutor.name;
                         else Username = "null";
                     }
@@ -238,4 +240,19 @@ else
         }
     }
 
+    private void CheckIsMine()
+    {
+        foreach (var message in _messages)
+        {
+            message.SetMine(message.Username == Username);
+        }
+    }
+
+    private async void RefreshMessages()
+    {
+        if (ChatId != null && UserId != null && Username != null)
+        {
+            _messages = await _serverInteraction.GetMessagesList(ChatId, UserId, Username);
+        }
+    }
 }

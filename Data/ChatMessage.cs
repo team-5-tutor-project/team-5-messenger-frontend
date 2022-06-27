@@ -9,12 +9,17 @@ namespace BlazorApp.Data
             Mine = mine;
         }
 
-        public string Username { get; set; }
-        public string? Body { get; set; }
-        public bool Mine { get; set; }
+        public string Username { get; }
+        public string? Body { get; }
+        public bool Mine { get; private set; }
 
         public bool IsNotice => Body.StartsWith("(Notice)");
 
         public string CSS => Mine ? "sent" : "received";
+
+        public void SetMine(bool mine)
+        {
+            Mine = mine;
+        }
     }
 }
