@@ -61,7 +61,7 @@ else
 }
 
 @code {
-
+    
     private void NavigateToLogin()
     {
         _navigationManager.NavigateTo("localhost:5000/login");
@@ -100,7 +100,7 @@ else
     private ServerInteraction _serverInteraction = new ServerInteraction("http://localhost:8000");
 
     private ClientInteraction _clientInteraction = new ClientInteraction("http://localhost:4000");
-
+    
     public async Task StartChat()
     {
         CheckUserToken();
